@@ -2,8 +2,12 @@
 address: localhost
 port: 8000
 
-# Location of the Splits File
-splits: splits.lss
+# List of all the split files accessible to the server
+splits:
+  My Splits: splits.lss
+
+# Name of the default split file to load
+default_splits: My Splits
 
 # Activate Global Hotkeys
 hotkeys: true
@@ -11,8 +15,8 @@ hotkeys: true
 # Layout Configuration
 # Each Component is optional and can come in any order
 layout:
-  -
-    Title
+  # -
+  #   Title
 
   -
     Timer
@@ -24,11 +28,11 @@ layout:
       always_show_last_split: true
       separator_last_split: true
 
-  -
-    PreviousSegment
+  # -
+  #   PreviousSegment
 
-  -
-    PossibleTimeSave
+  # -
+  #   PossibleTimeSave
 
   # -
   #   SumOfBest

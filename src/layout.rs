@@ -2,6 +2,9 @@ use livesplit_core::Timer;
 use livesplit_core::component::{title, splits, timer, previous_segment, possible_time_save,
                                 sum_of_best, graph, text};
 
+#[derive(Deserialize)]
+pub struct LayoutSettings(pub Vec<ComponentSettings>);
+
 pub enum Component {
     Title(title::Component),
     Splits(splits::Component),

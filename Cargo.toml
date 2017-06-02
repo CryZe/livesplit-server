@@ -5,9 +5,9 @@ authors = ["Christopher Serr <christopher.serr@gmail.com>"]
 
 [dependencies]
 livesplit-core = { git = "https://github.com/CryZe/livesplit-core", rev="e790373df2275707e004b12fb59beaa607cad9c5" }
-rocket = { git = "https://github.com/SergioBenitez/Rocket", rev="923b84f42c9a96e2e012cec7cad50b327c255717" }
-rocket_codegen = { git = "https://github.com/SergioBenitez/Rocket", rev="923b84f42c9a96e2e012cec7cad50b327c255717" }
-rocket_contrib = { git = "https://github.com/SergioBenitez/Rocket", rev="923b84f42c9a96e2e012cec7cad50b327c255717" }
+rocket = { git = "https://github.com/SergioBenitez/Rocket" }
+rocket_codegen = { git = "https://github.com/SergioBenitez/Rocket" }
+rocket_contrib = { git = "https://github.com/SergioBenitez/Rocket" }
 parking_lot = "0.4.4"
 serde_derive = "1.0.8"
 serde = "1.0.8"
