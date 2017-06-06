@@ -45,3 +45,11 @@ layout:
   #   Text:
   #     text:
   #       Center: Some random text
+
+  -
+    TotalPlaytime
+
+  -
+    CurrentPace:
+      comparison_override: Best Segments
+      accuracy: Hundredths

@@ -94,7 +94,7 @@ fn load_splits_from_name(config: &config::Config, name: &str) -> Result<Run, &'s
     parse(BufReader::new(file), Some(path), true).map_err(|_| "Couldn't parse splits file")
 }
 
-#[get("/load-splits/<name>")]
+#[get("/splits/load/<name>")]
 fn load_splits(state: State<RwLock<ServerState>>,
                name: String)
                -> Result<JSON<Vec<ComponentState>>, &'static str> {
@@ -108,7 +108,7 @@ fn load_splits(state: State<RwLock<ServerState>>,
     Ok(index(state))
 }
 
-#[get("/save-splits")]
+#[get("/splits/save")]
 fn save_splits(state: State<RwLock<ServerState>>)
                -> Result<JSON<Vec<ComponentState>>, &'static str> {
     {

@@ -1,6 +1,6 @@
 use livesplit_core::Timer;
 use livesplit_core::component::{title, splits, timer, previous_segment, possible_time_save,
-                                sum_of_best, graph, text};
+                                sum_of_best, graph, text, total_playtime, current_pace};
 
 #[derive(Deserialize)]
 pub struct LayoutSettings(pub Vec<ComponentSettings>);
@@ -14,6 +14,8 @@ pub enum Component {
     SumOfBest(sum_of_best::Component),
     Graph(graph::Component),
     Text(text::Component),
+    TotalPlaytime(total_playtime::Component),
+    CurrentPace(current_pace::Component),
 }
 
 #[derive(Serialize)]
@@ -26,6 +28,8 @@ pub enum ComponentState {
     SumOfBest(sum_of_best::State),
     Graph(graph::State),
     Text(text::State),
+    TotalPlaytime(total_playtime::State),
+    CurrentPace(current_pace::State),
 }
 
 #[derive(Serialize, Deserialize)]
@@ -38,6 +42,8 @@ pub enum ComponentSettings {
     SumOfBest,
     Graph(graph::Settings),
     Text(text::Settings),
+    TotalPlaytime,
+    CurrentPace(current_pace::Settings),
 }
 
 impl From<ComponentSettings> for Component {
@@ -67,6 +73,14 @@ impl From<ComponentSettings> for Component {
                 *component.settings_mut() = settings;
                 Component::Text(component)
             }
+            ComponentSettings::TotalPlaytime => {
+                Component::TotalPlaytime(total_playtime::Component::new())
+            }
+            ComponentSettings::CurrentPace(settings) => {
+                let mut component = current_pace::Component::new();
+                *component.settings_mut() = settings;
+                Component::CurrentPace(component)
+            }
         }
     }
 }
@@ -88,6 +102,12 @@ impl Component {
             }
             Component::Graph(ref mut component) => ComponentState::Graph(component.state(timer)),
             Component::Text(ref mut component) => ComponentState::Text(component.state()),
+            Component::TotalPlaytime(ref mut component) => {
+                ComponentState::TotalPlaytime(component.state(timer))
+            }
+            Component::CurrentPace(ref mut component) => {
+                ComponentState::CurrentPace(component.state(timer))
+            }
         }
     }
 }
