@@ -3,7 +3,7 @@ use std::io::BufReader;
 use std::path::PathBuf;
 use std::collections::HashMap;
 use serde_yaml::from_reader;
-use layout::LayoutSettings;
+use livesplit_core::layout::LayoutSettings;
 
 #[derive(Deserialize)]
 pub struct Config {

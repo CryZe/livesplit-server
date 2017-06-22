@@ -9,7 +9,6 @@ extern crate rocket_contrib;
 extern crate livesplit_core;
 extern crate parking_lot;
 
-mod layout;
 mod config;
 
 use std::io::{BufReader, BufWriter};
@@ -22,13 +21,13 @@ use livesplit_core::{Timer, Run, Segment, SharedTimer, HotkeySystem};
 use livesplit_core::parser::composite::parse;
 use livesplit_core::saver::livesplit;
 use parking_lot::RwLock;
-use layout::{Component, ComponentState};
+use livesplit_core::layout::{Layout, ComponentState};
 
 struct ServerState {
     timer: SharedTimer,
     current_splits: String,
     config: config::Config,
-    components: Vec<Component>,
+    layout: Layout,
 }
 
 #[get("/")]
@@ -36,9 +35,8 @@ fn index(state: State<RwLock<ServerState>>) -> JSON<Vec<ComponentState>> {
     let mut state = state.write();
     let state: &mut ServerState = &mut state;
     let timer = state.timer.read();
-    let components = &mut state.components;
 
-    JSON(components.iter_mut().map(|c| c.state(&timer)).collect())
+    JSON(state.layout.state(&timer).components)
 }
 
 #[get("/split")]
@@ -82,22 +80,20 @@ fn skip_split(state: State<RwLock<ServerState>>) -> JSON<Vec<ComponentState>> {
 }
 
 fn load_splits_from_name(config: &config::Config, name: &str) -> Result<Run, &'static str> {
-    let path = config
-        .splits
-        .get(name)
-        .cloned()
-        .ok_or("Splits Name doesn't match any splits in the list")?;
+    let path = config.splits.get(name).cloned().ok_or(
+        "Splits Name doesn't match any splits in the list",
+    )?;
 
-    let file = File::open(&path)
-        .map_err(|_| "Couldn't find splits file")?;
+    let file = File::open(&path).map_err(|_| "Couldn't find splits file")?;
 
     parse(BufReader::new(file), Some(path), true).map_err(|_| "Couldn't parse splits file")
 }
 
 #[get("/splits/load/<name>")]
-fn load_splits(state: State<RwLock<ServerState>>,
-               name: String)
-               -> Result<JSON<Vec<ComponentState>>, &'static str> {
+fn load_splits(
+    state: State<RwLock<ServerState>>,
+    name: String,
+) -> Result<JSON<Vec<ComponentState>>, &'static str> {
     {
         let mut state = state.write();
         let run = load_splits_from_name(&state.config, &name)?;
@@ -109,8 +105,9 @@ fn load_splits(state: State<RwLock<ServerState>>,
 }
 
 #[get("/splits/save")]
-fn save_splits(state: State<RwLock<ServerState>>)
-               -> Result<JSON<Vec<ComponentState>>, &'static str> {
+fn save_splits(
+    state: State<RwLock<ServerState>>,
+) -> Result<JSON<Vec<ComponentState>>, &'static str> {
     {
         let state = state.read();
         let path = state
@@ -120,19 +117,21 @@ fn save_splits(state: State<RwLock<ServerState>>)
             .cloned()
             .unwrap_or_else(|| PathBuf::from("splits.lss"));
 
-        let file = File::create(path)
-            .map_err(|_| "Splits file couldn't be created")?;
+        let file = File::create(path).map_err(
+            |_| "Splits file couldn't be created",
+        )?;
 
         let timer = state.timer.read();
-        livesplit::save(timer.run(), BufWriter::new(file))
-            .map_err(|_| "Couldn't save splits file")?;
+        livesplit::save(timer.run(), BufWriter::new(file)).map_err(
+            |_| "Couldn't save splits file",
+        )?;
     }
 
     Ok(index(state))
 }
 
 fn main() {
-    let mut config = config::load();
+    let config = config::load();
 
     let run = match load_splits_from_name(&config, &config.default_splits) {
         Ok(run) => run,
@@ -155,7 +154,7 @@ fn main() {
         None
     };
 
-    let components = config.layout.0.drain(..).map(|c| c.into()).collect();
+    let layout = Layout::from_settings(config.layout.clone());
 
     let rocket_config = Config::build(Environment::Production)
         .address(config.address.clone())
@@ -167,19 +166,23 @@ fn main() {
     let server_state = ServerState {
         timer,
         config,
-        components,
+        layout,
         current_splits,
     };
 
     rocket::custom(rocket_config, true)
         .manage(RwLock::new(server_state))
-        .mount("/",
-               routes![index,
-                       split,
-                       undo_split,
-                       skip_split,
-                       reset,
-                       load_splits,
-                       save_splits])
+        .mount(
+            "/",
+            routes![
+                index,
+                split,
+                undo_split,
+                skip_split,
+                reset,
+                load_splits,
+                save_splits,
+            ],
+        )
         .launch();
 }

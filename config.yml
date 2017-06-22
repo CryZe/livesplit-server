@@ -15,41 +15,42 @@ hotkeys: true
 # Layout Configuration
 # Each Component is optional and can come in any order
 layout:
-  # -
-  #   Title
+  components:
+    # -
+    #   Title
 
-  -
-    Timer
+    -
+      Timer
 
-  -
-    Splits:
-      visual_split_count: 5
-      split_preview_count: 1
-      always_show_last_split: true
-      separator_last_split: true
+    # -
+    #   Splits:
+    #     visual_split_count: 5
+    #     split_preview_count: 1
+    #     always_show_last_split: true
+    #     separator_last_split: true
 
-  # -
-  #   PreviousSegment
+    # -
+    #   PreviousSegment
 
-  # -
-  #   PossibleTimeSave
+    # -
+    #   PossibleTimeSave
 
-  # -
-  #   SumOfBest
+    # -
+    #   SumOfBest
 
-  # -
-  #   Graph:
-  #     live_graph: true
+    -
+      Graph:
+        live_graph: false
 
-  # -
-  #   Text:
-  #     text:
-  #       Center: Some random text
+    # -
+    #   Text:
+    #     text:
+    #       Center: Some random text
 
-  -
-    TotalPlaytime
+    # -
+    #   TotalPlaytime
 
-  -
-    CurrentPace:
-      comparison_override: Best Segments
-      accuracy: Hundredths
+    # -
+    #   CurrentPace:
+    #     comparison_override: Best Segments
+    #     accuracy: Hundredths
